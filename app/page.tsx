@@ -20,8 +20,8 @@ export default async function HomePage() {
             Explore scientific datasets, freely
           </h1>
           <p className="mb-8 text-lg text-ink-muted">
-            Browse and download open environmental and scientific data — CSV,
-            Excel, and ESRI Shapefiles.
+            Browse and download open environmental and
+            scientific datasets about Singapore's local biodiversity.
           </p>
           <div className="flex justify-center">
             <SearchBar large />

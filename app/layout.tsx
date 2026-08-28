@@ -17,9 +17,9 @@ const arvo = Arvo({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://data.naturehungry.sg"),
-  title: "Nature Hungry Data",
+  title: "Nature Hungry's Data Portal",
   description:
-    "An open data portal for scientific datasets — CSV, Excel, and ESRI Shapefiles.",
+    "An open data portal for scientific datasets about Singapore's local biodiversity.",
 };
 
 export default function RootLayout({
