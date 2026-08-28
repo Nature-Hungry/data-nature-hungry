@@ -2,5 +2,11 @@
   command = "npm run build"
   publish = ".next"
 
+[build.environment]
+  # R2_BUCKET_NAME ("nature-hungry-data") is just the bucket/project name, not
+  # a credential — it legitimately appears in README/footer copy and package.json,
+  # so exclude it from Netlify's secrets scanner to avoid false-positive build failures.
+  SECRETS_SCAN_OMIT_KEYS = "R2_BUCKET_NAME"
+
 [[plugins]]
   package = "@netlify/plugin-nextjs"
