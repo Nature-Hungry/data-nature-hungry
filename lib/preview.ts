@@ -16,6 +16,11 @@ export interface ShapefilePreview {
   featureCount: number;
   geometryTypes: string[];
   sampleProperties: Record<string, unknown>[];
+  /** GeoJSON FeatureCollection with a sample of features (geometry included) for map preview. */
+  sampleFeatureCollection: {
+    type: "FeatureCollection";
+    features: Record<string, unknown>[];
+  };
   bbox?: number[];
 }
 
@@ -81,14 +86,17 @@ function summarizeGeojson(geojson: any): ShapefilePreview {
   const geometryTypes = Array.from(
     new Set(features.map((f: any) => f?.geometry?.type).filter(Boolean))
   ) as string[];
-  const sampleProperties = features
-    .slice(0, MAX_PREVIEW_ROWS)
-    .map((f: any) => f.properties ?? {});
+  const sampleFeatures = features.slice(0, MAX_PREVIEW_ROWS);
+  const sampleProperties = sampleFeatures.map((f: any) => f.properties ?? {});
 
   return {
     kind: "shapefile",
     featureCount: features.length,
     geometryTypes,
     sampleProperties,
+    sampleFeatureCollection: {
+      type: "FeatureCollection",
+      features: sampleFeatures,
+    },
   };
 }

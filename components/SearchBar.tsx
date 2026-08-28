@@ -24,7 +24,7 @@ export function SearchBar({ large = false }: { large?: boolean }) {
       <input
         value={value}
         onChange={(e) => setValue(e.target.value)}
-        placeholder="Search our datasets (e.g. Reclamation)
+        placeholder="Search our datasets (e.g. Reclamation)"
         className={`w-full rounded-lg border border-line bg-white px-4 ${
           large ? "py-3 text-base" : "py-2 text-sm"
         } focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary`}

@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import type { Preview } from "@/lib/preview";
+
+const DatasetMap = dynamic(
+  () => import("@/components/DatasetMap").then((mod) => mod.DatasetMap),
+  { ssr: false }
+);
 
 export function PreviewTable({ datasetId }: { datasetId: string }) {
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -82,6 +88,9 @@ export function PreviewTable({ datasetId }: { datasetId: string }) {
   // Shapefile preview
   return (
     <div className="space-y-3 rounded-lg border border-line p-4 text-sm">
+      {preview.sampleFeatureCollection.features.length > 0 && (
+        <DatasetMap data={preview.sampleFeatureCollection as any} />
+      )}
       <p className="text-ink">
         <span className="font-semibold">{preview.featureCount}</span> features ·{" "}
         geometry types: {preview.geometryTypes.join(", ") || "unknown"}

@@ -17,11 +17,13 @@ export default async function DatasetsPage({
   let results = catalog;
   if (category) results = results.filter((d) => d.category === category);
   if (q) {
-    results = results.filter(
-      (d) =>
-        d.title.toLowerCase().includes(q) ||
-        d.description.toLowerCase().includes(q)
-    );
+    // split into words so word order/spacing doesn't matter, and match any field
+    const terms = q.split(/\s+/).filter(Boolean);
+    results = results.filter((d) => {
+      const haystack =
+        `${d.title} ${d.description} ${d.category}`.toLowerCase();
+      return terms.every((term) => haystack.includes(term));
+    });
   }
 
   return (
