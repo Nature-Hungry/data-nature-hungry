@@ -26,19 +26,22 @@ export default async function DatasetDetailPage({
   if (!dataset) notFound();
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <>
+      <header className="sticky top-0 z-20 w-full bg-white px-4 py-8 shadow-[0_4px_10px_rgba(72,72,85,0.12)]">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-2 flex items-center gap-2">
+            <span className="rounded bg-surface px-2 py-0.5 text-xs font-semibold uppercase text-primary">
+              {FORMAT_LABELS[dataset.format]}
+            </span>
+            <span className="text-xs text-ink-muted">{dataset.category}</span>
+          </div>
+          <h1 className="font-heading text-2xl font-bold text-primary">{dataset.title}</h1>
+        </div>
+      </header>
+
+      <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <div className="mb-8 rounded-lg border border-line bg-white p-5 lg:sticky lg:top-24 lg:z-10">
-            <div className="mb-2 flex items-center gap-2">
-              <span className="rounded bg-surface px-2 py-0.5 text-xs font-semibold uppercase text-primary">
-                {FORMAT_LABELS[dataset.format]}
-              </span>
-              <span className="text-xs text-ink-muted">{dataset.category}</span>
-            </div>
-            <h1 className="font-heading text-2xl font-bold text-primary">{dataset.title}</h1>
-          </div>
-
           <p className="mb-8 text-ink-muted">
             {dataset.description || "No description provided."}
           </p>
@@ -47,7 +50,7 @@ export default async function DatasetDetailPage({
           <PreviewTable datasetId={dataset.id} />
         </div>
 
-        <aside className="h-fit rounded-lg border border-line border-t-4 border-t-rose bg-white p-5 lg:sticky lg:top-24 lg:self-start">
+        <aside className="h-fit rounded-lg border border-line border-t-4 border-t-rose bg-white p-5 lg:sticky lg:top-36 lg:self-start">
           <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-ink-muted">
             Dataset details
           </h2>
@@ -79,6 +82,7 @@ export default async function DatasetDetailPage({
           </a>
         </aside>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
