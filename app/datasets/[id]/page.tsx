@@ -20,9 +20,10 @@ function formatSize(bytes: number): string {
 export default async function DatasetDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const dataset = await getDataset(params.id);
+  const { id } = await params;
+  const dataset = await getDataset(id);
   if (!dataset) notFound();
 
   return (

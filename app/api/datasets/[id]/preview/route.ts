@@ -4,7 +4,7 @@ import { getObjectBuffer } from "@/lib/r2";
 import { buildPreview, MAX_PREVIEW_FILE_SIZE_BYTES } from "@/lib/preview";
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -20,7 +20,11 @@ export async function GET(
 
   try {
     const buffer = await getObjectBuffer(dataset.key);
-    const preview = await buildPreview(dataset.format, buffer);
+    const preview = await buildPreview(
+      dataset.format,
+      buffer,
+      request.nextUrl.searchParams.get("sheet") ?? undefined
+    );
     return NextResponse.json({ preview });
   } catch (err) {
     console.error("Failed to build preview", err);

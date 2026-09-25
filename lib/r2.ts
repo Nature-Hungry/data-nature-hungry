@@ -12,9 +12,14 @@ type R2BucketLike = {
 };
 
 async function getWorkerBucket(): Promise<R2BucketLike | null> {
+  if (process.env.NODE_ENV !== "production") return null;
+
   try {
     const { env } = await getCloudflareContext({ async: true });
-    return ((env as Record<string, unknown>).DATA_BUCKET as R2BucketLike) ?? null;
+    const bucket = (env as Record<string, unknown>).DATA_BUCKET as
+      | R2BucketLike
+      | undefined;
+    return bucket && typeof bucket.get === "function" ? bucket : null;
   } catch {
     return null;
   }

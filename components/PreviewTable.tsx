@@ -13,11 +13,14 @@ export function PreviewTable({ datasetId }: { datasetId: string }) {
   const [preview, setPreview] = useState<Preview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [sheetName, setSheetName] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
+    setError(null);
     setLoading(true);
-    fetch(`/api/datasets/${datasetId}/preview`)
+    const query = sheetName ? `?sheet=${encodeURIComponent(sheetName)}` : "";
+    fetch(`/api/datasets/${datasetId}/preview${query}`)
       .then(async (res) => {
         if (!res.ok) throw new Error((await res.json()).error ?? "Failed to load preview");
         return res.json();
@@ -34,7 +37,7 @@ export function PreviewTable({ datasetId }: { datasetId: string }) {
     return () => {
       cancelled = true;
     };
-  }, [datasetId]);
+  }, [datasetId, sheetName]);
 
   if (loading) {
     return <p className="text-sm text-ink-muted">Loading preview…</p>;
@@ -55,32 +58,57 @@ export function PreviewTable({ datasetId }: { datasetId: string }) {
 
   if (preview.kind === "table") {
     return (
-      <div className="overflow-x-auto rounded-lg border border-line">
-        <table className="min-w-full divide-y divide-line text-sm">
-          <thead className="bg-navy text-white">
-            <tr>
-              {preview.columns.map((col) => (
-                <th
-                  key={col}
-                  className="whitespace-nowrap px-3 py-2 text-left font-semibold"
+      <div className="space-y-3">
+        {preview.sheetNames && preview.sheetNames.length > 1 && (
+          <div className="flex gap-1 overflow-x-auto border-b border-line" role="tablist" aria-label="Excel worksheets">
+            {preview.sheetNames.map((name) => {
+              const active = name === preview.activeSheet;
+              return (
+                <button
+                  key={name}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  className={`whitespace-nowrap border-b-2 px-3 py-2 text-sm font-semibold ${
+                    active
+                      ? "border-primary text-primary"
+                      : "border-transparent text-ink-muted hover:border-line hover:text-ink"
+                  }`}
+                  onClick={() => setSheetName(name)}
                 >
-                  {col}
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-line">
-            {preview.rows.map((row, i) => (
-              <tr key={i} className="even:bg-surface">
+                  {name}
+                </button>
+              );
+            })}
+          </div>
+        )}
+        <div className="overflow-x-auto rounded-lg border border-line">
+          <table className="min-w-full divide-y divide-line text-sm">
+            <thead className="bg-navy text-white">
+              <tr>
                 {preview.columns.map((col) => (
-                  <td key={col} className="whitespace-nowrap px-3 py-2 text-ink">
-                    {String(row[col] ?? "")}
-                  </td>
+                  <th
+                    key={col}
+                    className="whitespace-nowrap px-3 py-2 text-left font-semibold"
+                  >
+                    {col}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-line">
+              {preview.rows.map((row, i) => (
+                <tr key={i} className="even:bg-surface">
+                  {preview.columns.map((col) => (
+                    <td key={col} className="whitespace-nowrap px-3 py-2 text-ink">
+                      {String(row[col] ?? "")}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     );
   }

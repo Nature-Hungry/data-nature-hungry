@@ -9,6 +9,8 @@ export interface TablePreview {
   columns: string[];
   rows: Record<string, unknown>[];
   totalRowsInPreview: number;
+  sheetNames?: string[];
+  activeSheet?: string;
 }
 
 export interface ShapefilePreview {
@@ -35,7 +37,8 @@ export const MAX_PREVIEW_FILE_SIZE_BYTES = 25 * 1024 * 1024; // 25 MB
 
 export async function buildPreview(
   format: DatasetFormat,
-  buffer: Buffer
+  buffer: Buffer,
+  sheetName?: string
 ): Promise<Preview> {
   if (format === "csv") {
     const text = buffer.toString("utf-8");
@@ -55,8 +58,10 @@ export async function buildPreview(
 
   if (format === "xlsx") {
     const workbook = XLSX.read(buffer, { type: "buffer" });
-    const firstSheetName = workbook.SheetNames[0];
-    const sheet = workbook.Sheets[firstSheetName];
+    const activeSheet = workbook.SheetNames.includes(sheetName ?? "")
+      ? sheetName!
+      : workbook.SheetNames[0];
+    const sheet = workbook.Sheets[activeSheet];
     const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, {
       defval: "",
     }).slice(0, MAX_PREVIEW_ROWS);
@@ -66,6 +71,8 @@ export async function buildPreview(
       columns,
       rows,
       totalRowsInPreview: rows.length,
+      sheetNames: workbook.SheetNames,
+      activeSheet,
     };
   }
 
