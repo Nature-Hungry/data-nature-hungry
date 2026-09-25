@@ -24,9 +24,6 @@
       "bucket_name": "nature-hungry-data-opennext-cache"
     }
   ],
-  "images": {
-    "binding": "IMAGES"
-  },
   "observability": {
     "logs": {
       "enabled": true,
