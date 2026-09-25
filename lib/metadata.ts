@@ -25,7 +25,8 @@ export async function getCatalog(): Promise<DatasetRecord[]> {
     if (err?.name === "NoSuchKey" || err?.$metadata?.httpStatusCode === 404) {
       return [];
     }
-    throw err;
+    console.error("Unable to read dataset catalog from R2", err);
+    return [];
   }
 }
 
