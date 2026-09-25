@@ -3,9 +3,10 @@ import { getDataset } from "@/lib/metadata";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const dataset = await getDataset(params.id);
+  const { id } = await params;
+  const dataset = await getDataset(id);
   if (!dataset) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
