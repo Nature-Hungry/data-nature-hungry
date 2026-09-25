@@ -36,4 +36,12 @@
       "persist": true
     }
   },
+  {
+	"routes": [
+		{
+			"pattern": "data.naturehungry.sg",
+			"custom_domain": true
+		}
+	]
+}
 }
