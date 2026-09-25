@@ -11,7 +11,7 @@
   "services": [
     {
       "binding": "WORKER_SELF_REFERENCE",
-      "service": "nature-hungry-data"
+      "service": "data-nature-hungry"
     }
   ],
   "r2_buckets": [
