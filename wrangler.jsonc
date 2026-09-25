@@ -16,6 +16,10 @@
   ],
   "r2_buckets": [
     {
+      "binding": "DATA_BUCKET",
+      "bucket_name": "nature-hungry-data"
+    },
+    {
       "binding": "NEXT_INC_CACHE_R2_BUCKET",
       "bucket_name": "nature-hungry-data-opennext-cache"
     }

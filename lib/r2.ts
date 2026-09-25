@@ -1,5 +1,24 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
+
+type R2ObjectLike = {
+  text(): Promise<string>;
+  arrayBuffer(): Promise<ArrayBuffer>;
+};
+
+type R2BucketLike = {
+  get(key: string): Promise<R2ObjectLike | null>;
+};
+
+async function getWorkerBucket(): Promise<R2BucketLike | null> {
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    return ((env as Record<string, unknown>).DATA_BUCKET as R2BucketLike) ?? null;
+  } catch {
+    return null;
+  }
+}
 
 function requiredEnv(name: string): string {
   const value = process.env[name];
@@ -35,6 +54,13 @@ export function getBucketName(): string {
 }
 
 export async function getObjectBuffer(key: string): Promise<Buffer> {
+  const workerBucket = await getWorkerBucket();
+  if (workerBucket) {
+    const object = await workerBucket.get(key);
+    if (!object) throw new Error(`R2 object not found: ${key}`);
+    return Buffer.from(await object.arrayBuffer());
+  }
+
   const client = getR2Client();
   const res = await client.send(
     new GetObjectCommand({ Bucket: getBucketName(), Key: key })

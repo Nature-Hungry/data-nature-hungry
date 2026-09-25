@@ -1,11 +1,25 @@
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getR2Client, getBucketName, isR2Configured } from "@/lib/r2";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 import type { DatasetRecord } from "@/types/dataset";
 
 const CATALOG_KEY = "catalog.json";
 
 /** Reads the dataset catalog index stored as a single JSON object in R2. */
 export async function getCatalog(): Promise<DatasetRecord[]> {
+  try {
+    const { env } = await getCloudflareContext({ async: true });
+    const bucket = (env as Record<string, unknown>).DATA_BUCKET as
+      | { get(key: string): Promise<{ text(): Promise<string> } | null> }
+      | undefined;
+    if (bucket) {
+      const object = await bucket.get(CATALOG_KEY);
+      return object ? (JSON.parse(await object.text()) as DatasetRecord[]) : [];
+    }
+  } catch {
+    // Fall back to S3 for local development.
+  }
+
   // Lets pages render locally before R2 credentials are configured.
   if (!isR2Configured()) return [];
 
